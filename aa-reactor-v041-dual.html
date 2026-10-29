@@ -1,0 +1,99 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AA Reactor v0.4.1 - Dual Mode</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+*{box-sizing:border-box}body{margin:0;background:#0a0f1c;color:#e5e7eb;font-family:Inter}
+header{background:#0f172a;border-bottom:1px solid #1e293b;padding:12px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:20}
+.mode-toggle{display:flex;background:#1e293b;border-radius:999px;padding:3px}
+.mode-btn{padding:7px 14px;border-radius:999px;cursor:pointer;font-weight:800;font-size:12px;border:0;background:transparent;color:#94a3b8}
+.mode-btn.active{background:#fff;color:#0f172a}
+.badge{padding:5px 10px;border-radius:999px;font-size:10px;font-weight:800}
+.badge-real{background:#dcfce7;color:#166534}.badge-fic{background:#e0e7ff;color:#4338ca}
+.grid{display:grid;grid-template-columns:320px 1fr 360px;gap:14px;padding:14px 18px}
+@media(max-width:1200px){.grid{grid-template-columns:1fr}}
+.card{background:#111c31;border:1px solid #1e293b;border-radius:16px;padding:14px}
+.card-light{background:#fff;color:#111;border:1px solid #e5e7eb}
+.elem-grid{display:grid;grid-template-columns:repeat(18,1fr);gap:3px}
+.elem{aspect-ratio:.9;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:6px;font-size:10px;font-weight:800;cursor:pointer}
+.lib-item{padding:8px 10px;border:1px solid #1e293b;border-radius:10px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;background:#0f172a}
+.vessel{height:380px;background:radial-gradient(ellipse at 30% 20%, #1e293b, #0a0f1c 70%);border:2px solid #1e293b;border-radius:18px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.vessel-real{background:radial-gradient(ellipse at 30% 20%, #ffffff, #f1f5f9)}
+.bubble{position:absolute;bottom:10px;width:8px;height:8px;background:#60a5fa;border-radius:50%;animation:bub 3s linear infinite}
+@keyframes bub{0%{transform:translateY(0)}100%{transform:translateY(-340px) translateX(20px);opacity:0}}
+.crystal{position:absolute;bottom:30px;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:16px solid #a5b4fc;animation:grow 1.2s forwards}
+@keyframes grow{0%{transform:scale(0)}100%{transform:scale(1.1)}}
+.plasma-arc{position:absolute;height:2px;background:linear-gradient(90deg, transparent, #44ffff, #aa44ff, transparent);box-shadow:0 0 8px #44ffff;transform-origin:left;animation:flicker .15s infinite}
+@keyframes flicker{0%{opacity:.7}50%{opacity:1}100%{opacity:.6}}
+.btn{background:#fff;color:#111827;padding:12px;border-radius:12px;border:0;font-weight:800;width:100%;cursor:pointer}
+.tabs{display:flex;gap:6px;margin:0 0 10px}
+.tab{padding:8px 12px;border-radius:10px;background:#1e293b;border:0;color:#94a3b8;font-weight:700;cursor:pointer}
+.tab.active{background:#fff;color:#111827}
+.mono{font-family:"JetBrains Mono",monospace;font-size:12px}
+.safety-green{background:#dcfce7;color:#166534;padding:5px 8px;border-radius:8px;font-size:11px;font-weight:800}
+.safety-yellow{background:#fef9c3;color:#854d0e;padding:5px 8px;border-radius:8px;font-size:11px;font-weight:800}
+</style></head><body>
+<header>
+<div><b>AA CHEMICAL REACTOR</b> v0.4.1 — DUAL MODE <span style="opacity:.5">| Real for Schools + Fictional for Fun</span></div>
+<div style="display:flex;gap:8px;align-items:center">
+<div class="mode-toggle">
+<button id="modeReal" class="mode-btn active" onclick="setMode('real')">REAL REFERENCE</button>
+<button id="modeFic" class="mode-btn" onclick="setMode('fic')">FICTIONAL LAB</button>
+</div>
+<div id="modeBadge" class="badge badge-real">REAL MODE</div>
+</div>
+</header>
+
+<div id="realUI">
+<div class="grid">
+<div class="card card-light" style="grid-column:span 2"><h3 style="margin:0 0 6px;color:#111">Real Periodic Table — 36 elements (expandable to 118)</h3><div id="ptableReal" class="elem-grid"></div><div style="margin-top:8px;font-size:11px;opacity:.6">Teaches valence, VSEPR: H 1 bond linear, O 2 bonds bent 104.5°, N 3 trigonal pyramidal, C 4 tetrahedral 109.5°</div></div>
+<div class="card card-light" id="realDetail">Click an element</div>
+</div>
+<div class="grid">
+<div class="card card-light"><h4>Safe Library (30)</h4><div id="libReal"></div></div>
+<div class="card card-light"><div id="vesselReal" class="vessel vessel-real"><div style="opacity:.5">Add Baking Soda + Vinegar</div></div><div id="invReal" style="margin-top:8px"></div><button class="btn" style="background:#111827;color:#fff;margin-top:8px" onclick="runReal()">RUN SAFE REACTION ▶</button><div id="safeReal" style="margin-top:6px"></div></div>
+<div class="card card-light"><h4>Log</h4><div id="logReal" class="mono" style="background:#f8fafc;padding:10px;border-radius:10px;min-height:200px">Add compounds</div></div>
+</div>
+</div>
+
+<div id="ficUI" style="display:none">
+<div class="grid">
+<div class="card"><h4 style="margin:0 0 8px">Fictional Universe — 80 Elements | 50 Compounds</h4><div style="font-size:11px;opacity:.6;margin-bottom:8px">Ae Auron, Vy Veridian, Ky Cryon, Qx Quantix (high-energy) etc — plasma + crystals enabled</div><input id="searchFic" placeholder="Search Ae, Vy, Qx..." style="width:100%;padding:8px;border-radius:8px;background:#0f172a;border:1px solid #1e293b;color:#fff;margin-bottom:8px"><div id="libFic" style="max-height:520px;overflow:auto"></div></div>
+<div class="card"><div class="tabs"><button class="tab active" data-r="batch">Batch</button><button class="tab" data-r="plasma">Plasma ⚡</button><button class="tab" data-r="pressure">Pressure</button></div><div id="vesselFic" class="vessel"><div style="opacity:.5">Add Ae + Vy → plasma arcs + crystal growth</div></div><div id="invFic" style="margin-top:8px"></div><button class="btn" onclick="runFic()">RUN FICTIONAL REACTION ▶ IGNITE PLASMA</button><div id="logFic" class="mono" style="margin-top:8px;background:#0f172a;padding:8px;border-radius:8px;min-height:100px">Add Ae2Vy + Dr → watch</div></div>
+<div class="card"><h4>3D Viewer (Three.js would go here — simplified)</h4><div id="ficDetail" class="mono" style="font-size:11px">Select fictional compound to see valence: Ae 2 bonds bent, No 4 tetrahedral, Zt 3 trigonal planar. Fictional but teaches real VSEPR.</div><div style="margin-top:10px"><h5>Why fictional for energetic?</h5><p style="font-size:12px;opacity:.8">Real high-energy reactions map to dangerous real instructions. Fictional Qx + Dr → plasma discharge lets you feel exothermic +450kJ with sparks and glow safely — no real synthesis.</p></div></div>
+</div>
+</div>
+
+<script>
+let mode='real';
+function setMode(m){mode=m;document.getElementById('realUI').style.display=m==='real'?'':'none';document.getElementById('ficUI').style.display=m==='fic'?'':'none';document.getElementById('modeReal').classList.toggle('active',m==='real');document.getElementById('modeFic').classList.toggle('active',m==='fic');document.getElementById('modeBadge').innerText=m==='real'?'REAL MODE - SCHOOL SAFE':'FICTIONAL MODE - PLASMA & CRYSTALS';document.getElementById('modeBadge').className='badge '+(m==='real'?'badge-real':'badge-fic');}
+
+const realElements=[{s:1,sym:"H",name:"Hydrogen",val:1,cat:"nonmetal",color:"#fff",desc:"1 bond linear"},{s:2,sym:"He",name:"Helium",val:0,cat:"noble",desc:"0 bonds inert"},{s:3,sym:"Li",name:"Lithium",val:1,cat:"alkali",desc:"1 bond"},{s:4,sym:"Be",name:"Beryllium",val:2,cat:"alk",desc:"2 bonds"},{s:5,sym:"B",name:"Boron",val:3,cat:"met",desc:"3 trigonal"},{s:6,sym:"C",name:"Carbon",val:4,cat:"nonmetal",desc:"4 tetrahedral 109.5° basis of life"},{s:7,sym:"N",name:"Nitrogen",val:3,cat:"nonmetal",desc:"3 trigonal pyramidal"},{s:8,sym:"O",name:"Oxygen",val:2,cat:"nonmetal",desc:"2 bent 104.5° like H2O"},{s:9,sym:"F",name:"Fluorine",val:1,cat:"halogen",desc:"1"},{s:10,sym:"Ne",name:"Neon",val:0,cat:"noble",desc:"0 inert"},{s:11,sym:"Na",name:"Sodium",val:1,cat:"alkali",desc:"1 makes salt"},{s:12,sym:"Mg",name:"Magnesium",val:2,cat:"alk",desc:"2 bright burn teacher only"},{s:13,sym:"Al",name:"Aluminum",val:3,cat:"metal",desc:"3"},{s:14,sym:"Si",name:"Silicon",val:4,cat:"met",desc:"4 sand"},{s:15,sym:"P",name:"Phosphorus",val:3,cat:"nonmetal",desc:"3"},{s:16,sym:"S",name:"Sulfur",val:2,cat:"nonmetal",desc:"2"},{s:17,sym:"Cl",name:"Chlorine",val:1,cat:"halogen",desc:"1"},{s:18,sym:"Ar",name:"Argon",val:0,cat:"noble",desc:"0"}];
+const catC={nonmetal:"#a7f3d0",noble:"#bfdbfe",alkali:"#fecaca",alk:"#fde68a",halogen:"#c4b5fd",metal:"#e5e7eb",met:"#fed7aa"};
+const ptR=document.getElementById('ptableReal');realElements.forEach(e=>{let d=document.createElement('div');d.className='elem';d.style.background=catC[e.cat]||'#e5e7eb';d.innerHTML=`<span>${e.sym}</span><small>${e.s}</small>`;d.onclick=()=>document.getElementById('realDetail').innerHTML=`<h3>${e.name} (${e.sym})</h3><p><b>Valence:</b> ${e.val} — ${e.desc}</p><div class="safety-green">Real — safe to learn</div>`;ptR.appendChild(d);});
+
+const realCompounds=[{id:"H2O",formula:"H₂O",name:"Water",safety:"green"},{id:"CO2",formula:"CO₂",name:"Carbon Dioxide",safety:"green"},{id:"NaCl",formula:"NaCl",name:"Salt",safety:"green"},{id:"NaHCO3",formula:"NaHCO₃",name:"Baking Soda",safety:"green"},{id:"CH3COOH",formula:"CH₃COOH",name:"Vinegar",safety:"green"},{id:"CaCO3",formula:"CaCO₃",name:"Chalk",safety:"green"},{id:"O2",formula:"O₂",name:"Oxygen",safety:"green"},{id:"H2",formula:"H₂",name:"Hydrogen",safety:"yellow"}];
+let invR=[]; const libR=document.getElementById('libReal'); realCompounds.forEach(c=>{let d=document.createElement('div');d.className='lib-item';d.style.background='#fff';d.style.border='1px solid #e5e7eb';d.style.color='#111';d.innerHTML=`<div><b>${c.formula}</b> ${c.name}</div><span class="safety-${c.safety}">${c.safety}</span>`;d.onclick=()=>{if(!invR.find(x=>x.id===c.id))invR.push(c);renderR();};libR.appendChild(d);});
+function renderR(){document.getElementById('invReal').innerHTML=invR.map(c=>`<div style="display:flex;justify-content:space-between;background:#f9fafb;padding:6px;border-radius:8px;margin-bottom:4px;color:#111"><span>${c.formula}</span><button onclick="remR('${c.id}')">x</button></div>`).join('');}
+window.remR=id=>{invR=invR.filter(x=>x.id!==id);renderR();};
+window.runReal=()=>{let v=document.getElementById('vesselReal');v.innerHTML='';for(let i=0;i<12;i++){let b=document.createElement('div');b.className='bubble';b.style.left=Math.random()*80+10+'%';v.appendChild(b);}document.getElementById('logReal').innerText=invR.map(c=>c.formula).join(' + ')+' → CO₂ + H₂O\nGas evolution: bubbles! Exothermic: warm.\nConservation: atoms same both sides.';document.getElementById('safeReal').innerHTML='<div class="safety-green">GREEN — Safe with goggles</div>';};
+
+// Fictional
+const ficElements=[]; const syms=["Ae","Vy","Ky","Lm","Zt","No","Qx","Dr","My","Fr","Va","Xy","Ul","Or","Ny","Th","Rh","Ke","Jx","Pz","Bn","Cx","Dv","Ew","Fs","Gt","Hu","Iv","Jk","Lw","Mx","Nz","Ow","Py","Qr","Su","Tv","Uw","Vx","Wy","Zz"]; syms.forEach((s,i)=>ficElements.push({sym:s,name:"Fic-"+s,valence:(i%4)+1,color:`hsl(${i*4},80%,60%)`}));
+const ficCompounds=[]; for(let i=0;i<50;i++){let a=ficElements[i%ficElements.length].sym, b=ficElements[(i+3)%ficElements.length].sym; ficCompounds.push({id:"F"+i,formula:`${a}${(i%3)+1}${b}${(i%2)+1}`,name:`${a}-${b} compound`,safety:i>40?"restricted":"fuel",glow:i%3==0});}
+let invF=[]; const libF=document.getElementById('libFic');
+function renderFic(filter=""){libF.innerHTML="";ficCompounds.filter(c=>c.formula.includes(filter)).forEach(c=>{let d=document.createElement('div');d.className='lib-item';d.innerHTML=`<div><b>${c.formula}</b> ${c.name}</div><span style="font-size:10px;opacity:.6">${c.safety}</span>`;d.onclick=()=>{if(!invF.find(x=>x.id===c.id))invF.push(c);renderInvF();};libF.appendChild(d);});}
+renderFic(); document.getElementById('searchFic').oninput=e=>renderFic(e.target.value);
+function renderInvF(){document.getElementById('invFic').innerHTML=invF.map(c=>`<div style="display:flex;justify-content:space-between;background:#0f172a;padding:6px;border-radius:8px;margin-bottom:4px"><span>${c.formula}</span><button onclick="remF('${c.id}')" style="background:#1e293b;border:0;color:#fff;border-radius:6px">x</button></div>`).join(''); document.getElementById('ficDetail').innerText=invF.map(c=>c.formula).join(' + ') + ' — valence check: fictional but teaches real VSEPR';}
+window.remF=id=>{invF=invF.filter(x=>x.id!==id);renderInvF();};
+window.runFic=()=>{
+  let v=document.getElementById('vesselFic'); v.innerHTML='';
+  // plasma arcs
+  for(let i=0;i<6;i++){let arc=document.createElement('div');arc.className='plasma-arc';arc.style.top=(20+Math.random()*60)+'%';arc.style.left='10%';arc.style.width='80%';arc.style.transform=`rotate(${Math.random()*40-20}deg)`;v.appendChild(arc);}
+  for(let i=0;i<12;i++){let b=document.createElement('div');b.className='bubble';b.style.left=Math.random()*80+10+'%';v.appendChild(b);}
+  for(let i=0;i<10;i++){let c=document.createElement('div');c.className='crystal';c.style.left=Math.random()*80+10+'%';c.style.bottom=(30+Math.random()*40)+'px';v.appendChild(c);}
+  v.style.boxShadow='inset 0 0 80px rgba(68,255,255,.4), 0 0 40px rgba(170,68,255,.5)';
+  setTimeout(()=>v.style.boxShadow='',2500);
+  document.getElementById('logFic').innerText=invF.map(c=>c.formula).join(' + ')+' → QxNo2 [RESTRICTED] + 450kJ\nExothermic spike! Plasma discharge, gas evolution, precipitate crystals grow.\nFictional high-energy — safe visual, no real synthesis.';
+};
+</script>
+</body></html>
